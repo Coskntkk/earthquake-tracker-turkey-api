@@ -1,14 +1,21 @@
 require("dotenv").config();
 const app = require("express")();
-const http = require("http").createServer(app);
+const morgan = require("morgan");
 const cors = require("cors");
 
-const indexRouter = require("./routers/indexRouter");
-
+// Middlewares
 app.use(cors());
-app.use("/api/v1", indexRouter);
+app.use(morgan("dev"));
+
+// Routers
+const indexRouter = require("./routers/indexRouter");
+app.use("/", indexRouter);
+
+// Error handling
+const globalErrorHandler = require("./utils/globalErrorHandler");
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, function () {
+app.listen(PORT, function () {
     console.log("The api is on port " + PORT);
 });

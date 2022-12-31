@@ -37,7 +37,6 @@
                         "in": "query",
                         "description": "Number of last earthquakes to return",
                         "required": false,
-                        "explode": true,
                         "schema": {
                             "type": "integer",
                             "default": 50,
@@ -65,7 +64,7 @@
                         "explode": true,
                         "schema": {
                             "type": "string",
-                            "default": "id",
+                            "default": "date",
                             "enum": [
                                 "date",
                                 "time",
@@ -79,7 +78,7 @@
                         }
                     },
                     {
-                        "name": "sort_type",
+                        "name": "order",
                         "in": "query",
                         "description": "Order of sorting",
                         "required": false,
@@ -90,6 +89,20 @@
                             "enum": [
                                 "asc",
                                 "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Fields to return",
+                        "required": false,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "date,latitude,longitude,depth,magnitude,place,city",
+                            "enum": [
+                                "date", "latitude", "longitude", "depth", "magnitude", "place", "city"
                             ]
                         }
                     }
@@ -120,7 +133,7 @@
                         }
                     },
                     "400": {
-                        "description": "An error occurred while fetching data from Kandilli Observatory",
+                        "description": "Bad request",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -132,6 +145,54 @@
                                         },
                                         "message": {
                                             "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Too many requests. Retry after 5 seconds."
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong."
                                         },
                                         "data": {
                                             "type": "null",
@@ -160,11 +221,6 @@
                         "type": "string",
                         "format": "date",
                         "example": "2023-01-01"
-                    },
-                    "time": {
-                        "type": "string",
-                        "format": "time",
-                        "example": "12:00:00"
                     },
                     "latitude": {
                         "type": "number",

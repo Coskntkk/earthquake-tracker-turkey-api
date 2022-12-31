@@ -1,33 +1,34 @@
-exports.getEarthQuakes = async (req, res) => {
-    try {
-        // Get earthquakes
-        let quakes = req.quakes;
-        // Get query parameters
-        const count = req.query.count ? parseInt(req.query.count) : 50;
-        const page = req.query.page ? parseInt(req.query.page) : 1;
-        const sort_by = req.query.sort_by ? req.query.sort_by : "id";
-        const sort_type = req.query.sort_type ? req.query.sort_type : "asc";
-        /// Make filterings and sortings
-        // Sort
-        if (sort_type === "asc") {
-            quakes.sort((a, b) => { return a[sort_by] - b[sort_by] });
-        } else {
-            quakes.sort((a, b) => { return b[sort_by] - a[sort_by] });
-        }
-        // Count and page
-        quakes = quakes.slice((page - 1) * count, page * count);
-        // Send the data to the client
-        res.status(200).send({
-            success: true,
-            message: "Data is fetched successfully.",
-            data: quakes
+const catchAsync = require("../utils/catchAsync");
+
+exports.getEarthQuakes = catchAsync(async (req, res) => {
+    // Get the query parameters
+    let { page, count, sort_by, order, fields } = req.query;
+    // Get earthquakes
+    let quakes = req.quakes;
+    /// Make filterings and sortings
+    // Sort by and order
+    quakes.sort((a, b) => { return a[sort_by] - b[sort_by] });
+    if (order === "desc") quakes.reverse();
+    // Count and page
+    quakes = quakes.slice((page - 1) * count, page * count);
+    // Fields
+    quakes = quakes.map((quake) => {
+        let newQuake = {};
+        fields.forEach((field) => {
+            newQuake[field] = quake[field];
         });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ 
-            success: false,
-            message: "Error occured while getting the data from the website."
-        });
-    }
-};
+        return newQuake;
+    });
+    // Set the headers
+    res.header("X-Total-Count", req.quakes.length);
+    res.header("X-Total-Pages", Math.ceil(req.quakes.length / count));
+    res.header("X-Current-Page", page);
+    res.header("X-Per-Page", count);
+    // Send the data to the client
+    res.status(200).send({
+        success: true,
+        message: "Data is fetched successfully.",
+        data: quakes
+    });
+});
 
