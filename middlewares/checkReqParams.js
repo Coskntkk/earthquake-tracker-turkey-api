@@ -45,7 +45,7 @@ const checkReqParams = catchAsync(async (req, res, next) => {
             params.order = order;
         }
     } else {
-        params.order = "asc";
+        params.order = "desc";
     }
     // Fields
     if (fields) {

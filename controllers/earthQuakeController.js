@@ -8,7 +8,7 @@ exports.getEarthQuakes = catchAsync(async (req, res) => {
     /// Make filterings and sortings
     // Sort by and order
     quakes.sort((a, b) => { return a[sort_by] - b[sort_by] });
-    if (order === "desc") quakes.reverse();
+    if (order === "desc" || sort_by === "date") quakes.reverse();
     // Count and page
     quakes = quakes.slice((page - 1) * count, page * count);
     // Fields

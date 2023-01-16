@@ -85,7 +85,7 @@
                         "explode": true,
                         "schema": {
                             "type": "string",
-                            "default": "asc",
+                            "default": "desc",
                             "enum": [
                                 "asc",
                                 "desc"
