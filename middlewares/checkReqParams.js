@@ -13,7 +13,7 @@ const checkReqParams = catchAsync(async (req, res, next) => {
             params.count = parseInt(count);
         }
     } else {
-        params.count = 50;
+        params.count = 500;
     }
     // Page
     if (page) {
